@@ -1,0 +1,4 @@
+spacy 3
+py2neo
+sklearn
+!python -m spacy download en_core_web_trf

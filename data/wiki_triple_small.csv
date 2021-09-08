@@ -1,0 +1,70 @@
+id,source,relation,end,domain,label
+0,Trent 500,is a,high-bypass turbofan,2847529,Trent 500
+1,Trent 500,produced by,Rolls-Royce plc to power the,2847529,Trent 500
+2,Trent 500,was selected in,Jun-97,2847529,Trent 500
+3,Trent 500,ran in,May-99,2847529,Trent 500
+4,Trent 500,flew in,Jun-00,2847529,Trent 500
+5,Trent family,has the,Trent 700,2847529,Trent 500
+6,Trent 500 first,ran in,May-99,2847529,Trent 500
+7,Trent 500,is a,high bypass turbofan,2847529,Trent 500
+8,Trent 500,has an,annular combustor,2847529,Trent 500
+9,Trent 500,has an,8.5:1 bypass ratio,2847529,Trent 500
+10,HP compressors,made of,single crystal CMSX-4 alloy,2847529,Trent 500
+11,Trent 500,has the,same wide chord fan as the Trent 700,2847529,Trent 500
+12,Trent 700,is a,high-bypass turbofan,2847530,Trent 700
+13,Trent 700,produced by,Rolls-Royce plc to power the Airbus A330,2847530,Trent 700
+14,Trent 700,selected by,Cathay Pacific,2847530,Trent 700
+15,Trent 700,was certified in,Jan-94,2847530,Trent 700
+16,characteristic three-shaft architecture of the RB211,is the,first variant of the Trent family,2847530,Trent 700
+17,Cathay Pacific,powered by,RB211-524L engines,2847530,Trent 700
+18,first Trent 700-powered A330,flew in,Aug-94,2847530,Trent 700
+19,Cathay Pacific,introduced,it,2847530,Trent 700
+20,ETOPS approval,was achieved in,Mar-95,2847530,Trent 700
+21,Trent 700,is an,axial flow,2847530,Trent 700
+22,Rolls-Royce,derived from,later members of the Trent engine family,2847530,Trent 700
+23,Trent 800,is a,high-bypass turbofan,2847533,Trent 800
+24,Trent 800,produced by,Rolls-Royce plc,2847533,Trent 800
+25,Trent 800,ran in,Sep-93,2847533,Trent 800
+26,Trent 800,has the,Trent family three shaft architecture,2847533,Trent 800
+27,Trent 800,certified in,early 1995 for a mid-1995 introduction,2847533,Trent 800
+28,full test,was planned for,Sep-93,2847533,Trent 800
+29,Singapore order,was followed by,large orders from American Airlines,2847533,Trent 800
+30,British Airways,announced in,September 1998 that it,2847533,Trent 800
+31,Trent 800,is an,axial flow,2847533,Trent 800
+32,Trent 800,has an,annular combustor,2847533,Trent 800
+33,a British Airways Boeing 777-236ER,landed at,Heathrow after both Trent 800 engines,2847533,Trent 800
+34,Rolls-Royce,had,many small,2847533,Trent 800
+35,Trent 900,is a,high bypass turbofan,2847535,Trent 900
+36,Trent 900,produced by,Rolls-Royce plc to power the Airbus A380,2847535,Trent 900
+37,Trent 900,selected by,Singapore Airlines,2847535,Trent 900
+38,A380,announced in,October 2007 that production of the Trent 900,2847535,Trent 900
+39,Trent 900,is an,axial flow,2847535,Trent 900
+40,Trent 900,has a,single annular combustor,2847535,Trent 900
+41,Trent family,controlled by,FADECs from Goodrich,2847535,Trent 900
+42,Trent family,provided by,Hamilton Sundstrand,2847535,Trent 900
+43,Trent 900,based on,QUICK Technology,2847535,Trent 900
+44,Trent 900 family of engines,were,available for delivery from 2012,2847535,Trent 900
+45,Rolls Royce,told,Aviation Week,2847535,Trent 900
+46,Trent 1000,is a,high-bypass turbofan engine,2847536,Trent 1000
+47,Trent 1000,produced by,Rolls-Royce plc,2847536,Trent 1000
+48,intermediate pressure,was discovered in,early 2016,2847536,Trent 1000
+49,Bypass ratio over 10:1,keeps the,characteristic three-spool layout of the Trent series,2847536,Trent 1000
+50,Trent 1000 TEN,certified in,Jul-16,2847536,Trent 1000
+51,All Nippon Airways,selected,Rolls-Royce to power 30 787-3s,2847536,Trent 1000
+52,Trent 1000,is a,high bypass turbofan,2847536,Trent 1000
+53,Trent 1000,is a,bleedless design,2847536,Trent 1000
+54,Trent 1000,found in,other members of the Trent family,2847536,Trent 1000
+55,Trent 1000,was powered by,Trent 1000 engines,2847536,Trent 1000
+56,specific fuel consumption,was matched by,Package B,2847536,Trent 1000
+57,specific fuel consumption,certified in,Dec-11,2847536,Trent 1000
+58,specific fuel consumption,improved by,Package C,2847536,Trent 1000
+59,specific fuel consumption,certified in,Sep-13,2847536,Trent 1000
+60,Rolls-Royce,installs a,revised IP compressor blade for early June testing,2847536,Trent 1000
+61,similar IP Compressor durability issue,published in,Jun-18,2847536,Trent 1000
+62,low-cycle fatigue,caused by,high atmospheric sulfur,2847536,Trent 1000
+63,initial fix,was installed by,Sep-18,2847536,Trent 1000
+64,initial fix,has a,different Trent XWB-style IP rotor design,2847536,Trent 1000
+65,Rolls conservatively,limited,single engine,2847536,Trent 1000
+66,Rolls conservatively,followed by,cold weather tests,2847536,Trent 1000
+67,HP turbine design,intended for,early 2020,2847536,Trent 1000
+68,left wing,fell over,urban areas,2847536,Trent 1000
