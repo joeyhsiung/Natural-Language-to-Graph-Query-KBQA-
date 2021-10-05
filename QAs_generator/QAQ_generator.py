@@ -1,25 +1,16 @@
 import time
-import random
 import re
 import pandas as pd
 import wikipedia
 
 import spacy
-import nltk
 from fuzzysearch import find_near_matches
 # nltk.download('punkt')
 # nltk.download('wordnet')
 # nltk.download('stopwords')
-from nltk.corpus import stopwords
-from nltk import word_tokenize, WordNetLemmatizer
 from transformers import AutoModelWithLMHead, AutoTokenizer
-from neo4j import GraphDatabase, basic_auth
-from py2neo import Graph,Node,Relationship,NodeMatcher
 
-from neo4j import GraphDatabase, basic_auth
-
-
-from params.configures import Config_path
+from multiHop_QA.configures import Config_path
 
 c = Config_path()
 nlp = spacy.load("en_core_web_sm")
@@ -39,22 +30,31 @@ answer_entities = wiki_triples['end'].to_list()
 text = re.sub(r'==.*?==+', '', text)
 # text = text.replace('\n', '')
 s = time.time()
-sent_list = []
+sent_list_clean = []
+sent_list_raw = []
 doc = nlp(text)
 for sent in doc.sents:
     # for token in sent:
-    text = sent.lemma_.replace('\s\s+', " ")
+    text = sent.lemma_.replace('\s+', "")
     text = text.split('\n')
-    # print(text)
-    for i in text:
-        if len(i) > 10:  # remove < 10 length sents
-            t = re.sub("[^a-zA-Z\d]", " ", i)
-            t = re.sub("^[^a-zA-Z]+", "", t)
+    text = list(filter(lambda x: x != "", text))
+    text_raw = sent.text
+    text_raw = text_raw.replace('\s+', "").split('\n')
+    text_raw = list(filter(lambda x: x != "", text_raw))
+    for i in range(len(text)):
+        if len(text[i]) > 10:  # remove < 10 length sents
+            # print(sent.lemma_)
+            t = re.sub("[^a-zA-Z0-9_. ,:;]", " ", text[i])
+            # t = re.sub("^[^a-zA-Z]+", "", t)
             t = " ".join(t.split())
-            t = t.lower()
-            # t = re.sub(r'(\d+),(\d+)', r'\1\2', t) # Remove comma only from number separators
-            sent_list.append(t)  # add if condition
-            # print(t)
+            # t = t.lower()
+
+            r = re.sub("[^a-zA-Z0-9_. ,:;]", " ", text_raw[i])
+            r = " ".join(r.split())
+            # r = r.lower()
+
+            sent_list_clean.append(t)  # add if condition
+            sent_list_raw.append(r)
             # print('================================')
 print('Process Time:', time.time() - s, 's')
 
@@ -66,36 +66,33 @@ def make_unique(doc):
         entity_lemma = " ".join([token.lemma_ for token in entity])
         entity_lemma = re.sub("[^a-zA-Z\d]", " ", entity_lemma)
         entity_lemma = re.sub(' +', ' ', entity_lemma)
-        entity_lemma = entity_lemma.lower()
+        # entity_lemma = entity_lemma.lower()
         if len(entity_lemma) > 2 and entity_lemma not in unique:
             unique.append(entity_lemma)
     return unique
 
 
-def match_end(sent_list, entities):
+def match_end(sent_list, sent_list_raw, entities):
     data = []
-    for sent in sent_list:
+    leng = len(sent_list)
+    for i in range(leng):
         end = {}
         for ent in entities:
-            matches = find_near_matches(ent, sent, max_l_dist=1)
+            matches = find_near_matches(ent, sent_list[i], max_l_dist=1)
             temp = [(m.start, m.end) for m in matches
                         if re.findall('\d+', ent) == re.findall('\d+', m.matched)]
             if temp:
                 end[ent] = temp
         if end:
-            data.append([sent, end])
+            data.append([sent_list_raw[i],sent_list[i], end])
     return data
 
 
 def match_source(QAs_list, entities):
     data = []
+    data_raw = []
     for q in QAs_list:
         for ent in entities:
-            # question = nlp(q[0])
-            # question_lemma = " ".join([token.lemma_ for token in question])
-            # question_lemma = re.sub("[^a-zA-Z\d]", " ", question_lemma)
-            # question_lemma = re.sub(' +', ' ', question_lemma)
-            # question_lemma = question_lemma.lower()
             matches = find_near_matches(ent, q[0], max_l_dist=1)
             if matches:
                 ent_match = [{ent:(m.start,m.end)} for m in matches
@@ -107,17 +104,17 @@ def match_source(QAs_list, entities):
     return data
 
 
-def question_generator(matched,max_length = 128):
+def question_generator(matched,max_length = 256):
     QAs = []
     QAs_ctx = []
     for i in matched:
         temp = []
-        for k,v in i[1].items():
+        for k,v in i[2].items():
             dic = {}
-            input_text = "answer: %s  context: %s </s>" % (i[0][v[0][0]:v[0][1]], i[0])
+            input_text = "answer: %s  context: %s </s>" % (k, i[0])
+            print(k,i[0])
             features = tokenizer([input_text], return_tensors='pt')
             output = model.generate(input_ids=features['input_ids'],
-                                    attention_mask=features['attention_mask'],
                                     max_length=max_length)
             questions = tokenizer.decode(output[0]).replace("<pad> question: ","").replace("</s>","")
             temp.append(questions)
@@ -144,7 +141,7 @@ if __name__ == '__main__':
     answer_entities = make_unique(answer_entities)
 
     # matched_source = match_entity(sent_list, source_entities,name = 'source')
-    matched_answer = match_end(sent_list, answer_entities)
+    matched_answer = match_end(sent_list_clean, sent_list_raw, answer_entities)
     # print(matched_answer)
     QAs_ctx,QAs = question_generator(matched_answer,max_length = 128)
     print(QAs_ctx)
@@ -154,6 +151,7 @@ if __name__ == '__main__':
     print(len(matched_source))
 
     # neo4j query
+    from neo4j import GraphDatabase
     uri = "neo4j://localhost:7687"
     driver = GraphDatabase.driver(uri, auth=("neo4j", "123"))
 
@@ -166,8 +164,8 @@ if __name__ == '__main__':
     res = []
     with driver.session(database="neo4j") as session:
         for i in matched_source:
-            question = i[0]
-            answer = i[1]['answer']
+            question = i[0].lower()
+            answer = i[1]['answer'].lower()
             for j in i[1]['entity']:
                 for ent, pos in j.items():
                     # print(ent, pos)
@@ -182,6 +180,16 @@ if __name__ == '__main__':
                         # print(rels)
     driver.close()
     print(res)
+
+
+
+
+
+
+
+
+
+
 
 # print(matched_source)
 # print(matched_answer)

@@ -1,10 +1,9 @@
 import re
 import spacy
-from params.configures import Config_path
-import numpy as np
+from multiHop_QA.configures import Config_path
 import pandas as pd
 from tqdm import tqdm
-from py2neo import Graph,Node,Relationship,NodeMatcher
+from py2neo import Graph,Node
 from neo4j import GraphDatabase
 
 

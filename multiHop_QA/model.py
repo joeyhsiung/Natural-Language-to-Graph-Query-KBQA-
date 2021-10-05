@@ -1,28 +1,8 @@
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from torch.autograd import Variable
-
-import torchtext
-from torchtext.legacy.datasets import Multi30k
-from torchtext.legacy.data import Field, BucketIterator
-
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
-
-import spacy
-import numpy as np
-import pandas as pd
-
-import random
-import math
-import time
-
-from params.configures import Config_path
-
+from transformers import BertTokenizer, BertModel
+from multiHop_QA.configures import Config_path
 config = Config_path()
-# USE_CUDA = True
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 class Encoder(nn.Module):
@@ -34,11 +14,10 @@ class Encoder(nn.Module):
                  pf_dim,
                  dropout,
                  device,
-                 max_length=100):
+                 max_length=256):
         super().__init__()
 
         self.device = device
-
         self.tok_embedding = nn.Embedding(input_dim, hid_dim)
         self.pos_embedding = nn.Embedding(max_length, hid_dim)
         self.layers = nn.ModuleList([EncoderLayer(hid_dim,
@@ -49,6 +28,7 @@ class Encoder(nn.Module):
                                      for _ in range(n_layers)])
         self.dropout = nn.Dropout(dropout)
         self.scale = torch.sqrt(torch.FloatTensor([hid_dim])).to(device)
+        self.pretrain = None
 
     def forward(self, src, src_mask):
         # src = [batch size, src len]
@@ -57,13 +37,28 @@ class Encoder(nn.Module):
         src_len = src.shape[1]
         pos = torch.arange(0, src_len).unsqueeze(0).repeat(batch_size, 1).to(self.device)
         # pos = [batch size, src len]
-        src = self.dropout((self.tok_embedding(src) * self.scale) + self.pos_embedding(pos))
+        # print(src.shape)
+        if self.pretrain:
+            layers = [-4, -3, -2, -1]
+            emb = self.pretrain_emb(src, layers)
+            # emb = Variable(torch.FloatTensor(emb))
+            # emb = emb.to(device)
+            src = self.dropout((emb * self.scale) + self.pos_embedding(pos))
+            # src = self.dropout((self.tok_embedding(src) * self.scale) + self.pos_embedding(pos))
+        else:
+            src = self.dropout((self.tok_embedding(src) * self.scale) + self.pos_embedding(pos))
         # src = [batch size, src len, hid dim]
         for layer in self.layers:
             src = layer(src, src_mask)
         # src = [batch size, src len, hid dim]
         return src
 
+    def pretrain_emb(self, data, layers):
+        with torch.no_grad():
+            outputs = self.pretrain(data)
+        states = outputs.hidden_states
+        output = torch.stack([states[i] for i in layers]).mean(0).squeeze()
+        return output
 
 class EncoderLayer(nn.Module):
     def __init__(self,
@@ -297,5 +292,11 @@ class Seq2Seq(nn.Module):
         return output, attention
 
 
-# if __name__ == "__main__":
-#     pass
+if __name__ == "__main__":
+    # USE_CUDA = True
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+    tokenizer.add_tokens(["<e>"], special_tokens=True)
+    # Load pre-trained model (weights)
+    bert = BertModel.from_pretrained('bert-base-uncased', output_hidden_states=True)

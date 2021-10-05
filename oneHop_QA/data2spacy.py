@@ -1,12 +1,9 @@
-import sys
-import os
-
 import pandas as pd
 import spacy
 import re
 from tqdm import tqdm
 from spacy.tokens import DocBin
-from params.configures import Config_path, Config_output_path
+from multiHop_QA.configures import Config_path, Config_output_path
 
 c = Config_path()
 c_output = Config_output_path()
