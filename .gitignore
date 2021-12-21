@@ -1,3 +1,5 @@
 /oneHop_QA/NER_output
+/oneHop_QA/NER_output_train-dev
+/oneHop_QA/cat_output_train-train_268_0719
 /multiHop_QA/models
 /data/WebQSP
